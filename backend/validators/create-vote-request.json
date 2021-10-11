@@ -1,0 +1,26 @@
+{
+    "$schema" : "http://json-schema.org/draft-04/schema#",
+    "title": "create-todo",
+    "type":"object",
+    "properties": {
+        "voteName":{
+            "type":"string"
+        },
+        "startDate":{
+            "type":"string"
+        },
+        "endDate":{
+            "type":"string"
+        },
+        "question":{
+            "type":"string"
+        }
+    },
+    "required":[
+        "voteName",
+        "startDate",
+        "endDate",
+        "question"
+    ],
+    "additionalProperties": false
+}
