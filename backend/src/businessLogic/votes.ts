@@ -9,7 +9,7 @@ import { UpdateVoteType } from '../models/UpdateVoteType';
 import { VotesStorage } from '../dataLayer/VotesStorage';
 import { UpdateVoteDoneRequest } from '../requests/UpdateVoteDoneRequest';
 import { UpdateVote } from '../models/UpdateVote';
-const logger = createLogger('todos')
+const logger = createLogger('votes')
 
 const votesAccess = new VotesAccess();
 const votesStorage = new VotesStorage();
@@ -55,7 +55,7 @@ export async function updateVoteType(userId: string, voteId: string, updateVote:
     }
 
     if (item.userId !== userId) {
-        logger.error(`User ${userId} does not have permission to update todo ${voteId}`)
+        logger.error(`User ${userId} does not have permission to update vote ${voteId}`)
         throw createHttpError(403, `User ${userId} unauthorized`)
     }
 
@@ -81,7 +81,7 @@ export async function updateVote(userId: string, voteId: string, updateVote: Upd
     }
 
     if (item.userId !== userId) {
-        logger.error(`User ${userId} does not have permission to update todo ${voteId}`)
+        logger.error(`User ${userId} does not have permission to update vote ${voteId}`)
         throw createHttpError(403, `User ${userId} unauthorized`)
     }
 
@@ -101,7 +101,7 @@ export async function deleteVote(userId: string, voteId: string) {
     }
 
     if (item.userId !== userId) {
-        logger.error(`User ${userId} does not have permission to update todo ${voteId}`)
+        logger.error(`User ${userId} does not have permission to update vote ${voteId}`)
         throw createHttpError(403, `User ${userId} unauthorized`)
     }
 
@@ -109,14 +109,14 @@ export async function deleteVote(userId: string, voteId: string) {
 
 }
 
-export async function updateAttachmentUrl(userId: string, todoId: string, attachmentId: string) {
+export async function updateAttachmentUrl(userId: string, voteId: string, attachmentId: string) {
     logger.info(`Generating attachment URL for attachment ${attachmentId}`)
   
     const attachmentUrl = await votesStorage.getAttachmentUrl(attachmentId)
   
-    logger.info(`Updating todo ${todoId} with attachment URL ${attachmentUrl}`, { userId, todoId })
+    logger.info(`Updating vote ${voteId} with attachment URL ${attachmentUrl}`, { userId, voteId })
   
-    const item = await votesAccess.getVoteItemById(todoId, userId)
+    const item = await votesAccess.getVoteItemById(voteId, userId)
   
     if (!item){
       logger.error('Item not found')
@@ -124,11 +124,11 @@ export async function updateAttachmentUrl(userId: string, todoId: string, attach
     }
   
     if (item.userId !== userId) {
-      logger.error(`User ${userId} does not have permission to update todo ${todoId}`)
+      logger.error(`User ${userId} does not have permission to update vote ${voteId}`)
       throw createHttpError(403, `User ${userId} unauthorized`)
     }
   
-    await votesAccess.updateAttachmentUrlById(userId, todoId, attachmentUrl)
+    await votesAccess.updateAttachmentUrlById(userId, voteId, attachmentUrl)
   }
 
 export async function generateUploadUrl(attachmentId: string): Promise<string> {

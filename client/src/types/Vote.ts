@@ -8,4 +8,6 @@ export interface Vote {
   question: string
   done: boolean
   attachmentUrl?: string
+  voteNoCount: string
+  voteYesCount: string
 }

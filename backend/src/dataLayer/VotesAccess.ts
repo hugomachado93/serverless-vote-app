@@ -61,7 +61,7 @@ export class VotesAccess {
 
 
   async updateVoteTypeItemById(voteId: string, userId: String, voteUpdate: UpdateVoteType) {
-    logger.info(`Update todo item ${voteId}`)
+    logger.info(`Update vote item ${voteId}`)
 
     await this.docClient.update({
       TableName: this.votesTable,
@@ -78,7 +78,7 @@ export class VotesAccess {
   }
 
   async updateVoteItemById(voteId: string, userId: String, voteUpdate: UpdateVote) {
-    logger.info(`Update todo item ${voteId}`)
+    logger.info(`Update vote item ${voteId}`)
 
     await this.docClient.update({
       TableName: this.votesTable,
@@ -94,7 +94,7 @@ export class VotesAccess {
   }
 
   async updateAttachmentUrlById(userId: String, voteId: string, attachmentUrl: string) {
-    logger.info(`Updating attachment URL for todo ${voteId} in ${this.votesTable}`)
+    logger.info(`Updating attachment URL for vote ${voteId} in ${this.votesTable}`)
 
     await this.docClient.update({
       TableName: this.votesTable,

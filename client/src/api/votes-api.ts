@@ -1,15 +1,12 @@
 import { apiEndpoint } from '../config'
-import { Todo } from '../types/Todo';
-import { CreateTodoRequest } from '../types/CreateTodoRequest';
 import Axios from 'axios'
-import { UpdateTodoRequest } from '../types/UpdateTodoRequest';
 import { CreateVoteRequest } from '../types/CreateVoteRequest';
 import { Vote } from '../types/Vote';
 import { UpdateVoteRequest } from '../types/UpdateVoteRequest';
 import { UpdateVoteDoneRequest } from '../types/UpdateVoteDoneRequest';
 
 export async function getVotes(idToken: string): Promise<Vote[]> {
-  console.log('Fetching todos')
+  console.log('Fetching votes')
 
   const response = await Axios.get(`${apiEndpoint}/votes`, {
     headers: {
@@ -17,28 +14,15 @@ export async function getVotes(idToken: string): Promise<Vote[]> {
       'Authorization': `Bearer ${idToken}`
     },
   })
-  console.log('Todos:', response.data)
+  console.log('Votes:', response.data)
   return response.data.items
-}
-
-export async function createTodo(
-  idToken: string,
-  newTodo: CreateTodoRequest
-): Promise<Todo> {
-  const response = await Axios.post(`${apiEndpoint}/todos`,  JSON.stringify(newTodo), {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${idToken}`
-    }
-  })
-  return response.data.item
 }
 
 export async function createVote(
   idToken: string,
-  newTodo: CreateVoteRequest
+  newVote: CreateVoteRequest
 ): Promise<Vote> {
-  const response = await Axios.post(`${apiEndpoint}/votes`,  JSON.stringify(newTodo), {
+  const response = await Axios.post(`${apiEndpoint}/votes`,  JSON.stringify(newVote), {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${idToken}`
@@ -65,7 +49,7 @@ export async function patchVoteDone(
   voteId: string,
   updatedVoteDone: UpdateVoteDoneRequest
 ): Promise<void> {
-  await Axios.patch(`${apiEndpoint}/votes/${voteId}/types`, JSON.stringify(updatedVoteDone), {
+  await Axios.patch(`${apiEndpoint}/votes/${voteId}`, JSON.stringify(updatedVoteDone), {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${idToken}`
@@ -73,7 +57,7 @@ export async function patchVoteDone(
   })
 }
 
-export async function deleteTodo(
+export async function deleteVote(
   idToken: string,
   voteId: string
 ): Promise<void> {

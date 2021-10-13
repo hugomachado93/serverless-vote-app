@@ -15,16 +15,17 @@ import {
   Form
 } from 'semantic-ui-react'
 
-import { createVote, deleteTodo, getVotes, patchVote, patchVoteDone } from '../api/todos-api'
+import { createVote, getVotes, patchVote, patchVoteDone, deleteVote } from '../api/votes-api'
 import Auth from '../auth/Auth'
 import { Vote } from '../types/Vote'
+import SemanticDatepicker from 'react-semantic-ui-datepickers';
 
-interface TodosProps {
+interface VotesProps {
   auth: Auth
   history: History
 }
 
-interface TodosState {
+interface VotesState {
   votes: Vote[]
   newVoteName: string
   voteEndDate: string
@@ -32,8 +33,8 @@ interface TodosState {
   loadingVotes: boolean
 }
 
-export class Todos extends React.PureComponent<TodosProps, TodosState> {
-  state: TodosState = {
+export class Votes extends React.PureComponent<VotesProps, VotesState> {
+  state: VotesState = {
     votes: [],
     newVoteName: '',
     voteEndDate: '',
@@ -68,26 +69,26 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
         newVoteName: ''
       })
     } catch {
-      alert('Todo creation failed')
+      alert('Vote creation failed')
     }
   }
 
   onVoteYesOrNo = async (pos: number, voteType: string) => {
-    const todo = this.state.votes[pos]
-    await patchVote(this.props.auth.getIdToken(), todo.voteId, {
+    const vote = this.state.votes[pos]
+    await patchVote(this.props.auth.getIdToken(), vote.voteId, {
       voteType
     })
   }
 
   onEditButtonClick = (voteId: string) => {
-    this.props.history.push(`/todos/${voteId}/edit`)
+    this.props.history.push(`/votes/${voteId}/edit`)
   }
 
   onVoteDelete = async (voteId: string) => {
     try {
-      await deleteTodo(this.props.auth.getIdToken(), voteId)
+      await deleteVote(this.props.auth.getIdToken(), voteId)
       this.setState({
-        votes: this.state.votes.filter(todo => todo.voteId !== voteId)
+        votes: this.state.votes.filter(vote => vote.voteId !== voteId)
       })
     } catch {
       alert('Vote deletion failed')
@@ -96,17 +97,17 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
 
   onVoteCheck = async (pos: number) => {
     try {
-      const todo = this.state.votes[pos]
-      await patchVoteDone(this.props.auth.getIdToken(), todo.voteId, {
-        done: !todo.done
+      const vote = this.state.votes[pos]
+      await patchVoteDone(this.props.auth.getIdToken(), vote.voteId, {
+        done: !vote.done
       })
       this.setState({
         votes: update(this.state.votes, {
-          [pos]: { done: { $set: !todo.done } }
+          [pos]: { done: { $set: !vote.done } }
         })
       })
     } catch {
-      alert('Todo deletion failed')
+      alert('Vote deletion failed')
     }
   }
 
@@ -118,42 +119,45 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
         loadingVotes: false
       })
     } catch (e) {
-      alert(`Failed to fetch todos: ${e.message}`)
+      alert(`Failed to fetch votes: ${e.message}`)
     }
   }
 
   render() {
     return (
       <div>
-        <Header as="h1">TODOs</Header>
+        <Header as="h1">Votes</Header>
 
-        {this.renderCreateTodoInput()}
+        {this.renderCreateVoteInput()}
 
-        {this.renderTodos()}
+        {this.renderVotes()}
+
       </div>
     )
   }
 
-  renderCreateTodoInput() {
+  renderCreateVoteInput() {
     return (
       <Grid.Row>
         <Grid.Column width={16}>
-
-        <Form onSubmit={this.handleSubmit}>
-          <Form.Input               
-            placeholder='Name'
-            name='name'
-            onChange={this.handleVoteName} />
-          <Form.Input               
-            placeholder='Question for vote'
-            name='name'
-            onChange={this.handleQuestion} />
-          <Form.Input               
-            placeholder='Vote duration (minutes)'
-            name='name'
-            onChange={this.handleEndDateChange} />
-          <Form.Button>Submit</Form.Button>
-        </Form>
+          <Form onSubmit={this.handleSubmit}>
+            <Form.Input
+              label='Vote name'
+              placeholder='Name'
+              name='name'
+              onChange={this.handleVoteName} />
+            <Form.Input
+              label='Question'
+              placeholder='Question for vote'
+              name='name'
+              onChange={this.handleQuestion} />
+            <Form.Input
+              label='Vote end date (2021-11-11)'
+              placeholder='vote date here (2021-11-11)'
+              name='name'
+              onChange={this.handleEndDateChange} />
+            <Form.Button>Create vote</Form.Button>
+          </Form>
         </Grid.Column>
         <Grid.Column width={16}>
           <Divider />
@@ -162,25 +166,25 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     )
   }
 
-  renderTodos() {
+  renderVotes() {
     if (this.state.loadingVotes) {
       return this.renderLoading()
     }
 
-    return this.renderTodosList()
+    return this.renderVotesList()
   }
 
   renderLoading() {
     return (
       <Grid.Row>
         <Loader indeterminate active inline="centered">
-          Loading TODOs
+          Loading Votes
         </Loader>
       </Grid.Row>
     )
   }
 
-  renderTodosList() {
+  renderVotesList() {
     return (
       <Grid padded>
         {this.state.votes.map((vote, pos) => {
@@ -199,21 +203,24 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
                 {vote.question}
               </Grid.Column>
               <Grid.Column width={3} floated="right">
-                {this.calculateDateDiff(new Date(vote.endDate)) + ' days left' }
+                {this.calculateDateDiff(new Date(vote.endDate)) + ' days left to end vote'}
+              </Grid.Column>
+              <Grid.Column width={3} floated="right">
+                {`Vote no count: ${vote.voteNoCount} | Vote yes count: ${vote.voteYesCount}`}
               </Grid.Column>
               <Grid.Row width={5} floated="right">
                 <Button
                   icon
                   color="green"
                   onClick={() => this.onVoteYesOrNo(pos, 'yes')}
-                >
+                >Vote yes
                   <Icon name="angle up" />
                 </Button>
                 <Button
                   icon
                   color="red"
                   onClick={() => this.onVoteYesOrNo(pos, 'no')}
-                >
+                >Vote no
                   <Icon name="angle down" />
                 </Button>
               </Grid.Row>

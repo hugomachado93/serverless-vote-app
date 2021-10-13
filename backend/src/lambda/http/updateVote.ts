@@ -9,7 +9,7 @@ import { createLogger } from '../../utils/logger'
 import { UpdateVoteDoneRequest } from '../../requests/UpdateVoteDoneRequest'
 import { updateVote } from '../../businessLogic/votes'
 
-const logger = createLogger('todos')
+const logger = createLogger('votes')
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {

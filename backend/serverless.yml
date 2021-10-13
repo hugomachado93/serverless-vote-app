@@ -107,7 +107,7 @@ functions:
           - dynamodb:GetItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.VOTES_TABLE}
     
-  DeleteTodo:
+  DeleteVote:
     handler: src/lambda/http/deleteVote.handler
     events:
       - http:
@@ -140,7 +140,22 @@ functions:
         Action:
           - dynamodb:UpdateItem
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.VOTES_TABLE}    
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.VOTES_TABLE}
+
+  UpdateVoteDone:
+    handler: src/lambda/http/updateVote.handler
+    events:
+      - http:
+          method: patch
+          path: votes/{voteId}
+          cors: true
+          authorizer: Auth
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:UpdateItem
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.VOTES_TABLE}
       
 resources:
   Resources:
