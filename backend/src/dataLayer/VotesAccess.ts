@@ -9,7 +9,6 @@ const logger = createLogger('VotesAccess')
 
 const XAWS = AWSXRay.captureAWS(AWS)
 
-
 export class VotesAccess {
 
   constructor(
